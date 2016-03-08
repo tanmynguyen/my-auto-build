@@ -1,1 +1,5 @@
-h1 { color: red; }
+.demo {
+  font-family: sans-serif; }
+  .demo .test {
+    font-size: 16px;
+    color: red; }
