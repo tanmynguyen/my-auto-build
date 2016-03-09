@@ -1,23 +1,33 @@
 const gulp = require('gulp');
+const autoprefixer = require('gulp-autoprefixer');
 const browserSync = require('browser-sync');
+const concat = require('gulp-concat');
 const sass = require('gulp-sass');
 const babel = require('gulp-babel');
+const react = require('gulp-react');
 const reload = browserSync.reload;
 
 
-//// Optimize images
-//gulp.task('images', () =>
-//  gulp.src('images/**/*')
-//    .pipe($.cache($.imagemin({
-//      progressive: true,
-//      interlaced: true
-//    })))
-//    .pipe(gulp.dest('dist/images'))
-//    .pipe($.size({title: 'images'}))
-//);
+var onError = function(err) {
+  notify.onError({
+    title:    "Error",
+    message:  "<%= error %>",
+  })(err);
+  this.emit('end');
+};
+
+var plumberOptions = {
+  errorHandler: onError,
+};
+
+gulp.task('react', function(){
+    return gulp.src('js/*.jsx')
+		.pipe(react())
+		.pipe(gulp.dest('build'));
+});
 
 gulp.task('babel', function(){
-    gulp.src('js/*.js')
+    gulp.src('js/*.{js,jsx}')
         .pipe(babel({
             presets: ['es2015']
         }))
