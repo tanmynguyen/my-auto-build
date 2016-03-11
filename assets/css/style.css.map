@@ -1,0 +1,1 @@
+{"version":3,"sources":["style.scss"],"names":[],"mappings":"AAAA;EAAK,YAAW,EAAG;;AAEnB;EAAW,sBAAqB,EAAG","file":"style.css","sourcesContent":["h1 { color: #red }\r\n\r\n#example { bacground-color: #red }"],"sourceRoot":"/source/"}

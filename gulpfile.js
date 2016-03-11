@@ -1,12 +1,18 @@
+
+//include thư viện cần thiết.
+
 const gulp = require('gulp');
 const autoprefixer = require('gulp-autoprefixer');
 const browserSync = require('browser-sync');
+const browserify = require('browserify');
 const concat = require('gulp-concat');
 const sass = require('gulp-sass');
 const babel = require('gulp-babel');
 const react = require('gulp-react');
+const plumber = require('gulp-plumber');
+const sourcemaps = require('gulp-sourcemaps');
+const filter = require('gulp-filter');
 const reload = browserSync.reload;
-
 
 var onError = function(err) {
   notify.onError({
@@ -20,42 +26,61 @@ var plumberOptions = {
   errorHandler: onError,
 };
 
-gulp.task('react', function(){
-    return gulp.src('js/*.jsx')
-		.pipe(react())
-		.pipe(gulp.dest('build'));
+// Compile Sass to CSS
+gulp.task('sass', function() {
+  var autoprefixerOptions = {
+    browsers: ['last 2 versions'],
+  };
+
+  var filterOptions = '**/*.css';
+
+  var reloadOptions = {
+    stream: true,
+  };
+
+  var sassOptions = {
+    includePaths: [
+
+    ]
+  };
+
+  return gulp.src('assets/sass/*.scss')
+    .pipe(plumber(plumberOptions))
+    .pipe(sourcemaps.init())
+    .pipe(sass(sassOptions))
+    .pipe(autoprefixer(autoprefixerOptions))
+    .pipe(gulp.dest('assets/css'))
+    .pipe(filter(filterOptions))
+    .pipe(reload(reloadOptions));
 });
 
 gulp.task('babel', function(){
-    gulp.src('js/*.{js,jsx}')
+    return gulp.src('assets/js/*.js')
+        .pipe(react())
         .pipe(babel({
-            presets: ['es2015']
+            presets: ['react','es2015']
         }))
-        .pipe(gulp.dest('./build'))
-        .pipe(browserSync.stream());
+        .pipe(gulp.dest('assets/build'))
+        .pipe(browserSync.stream()); 
 });
 
-gulp.task('sass', function () {
-  return gulp.src('./sass/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('./css'))
-    .pipe(browserSync.stream());
+// Watch JS/JSX and Sass files
+gulp.task('watch', function() {
+  	gulp.watch(['*.html'], reload);
+  	gulp.watch(['assets/js/*.js'], ['babel']);
+  	gulp.watch(['assets/css/*.css'], reload);
+  	gulp.watch(['assets/sass/*.scss'], ['sass']);
 });
 
 gulp.task('serve', [], function () {
     browserSync({
-        notify: false,
+        notify: true,
         server: {
             baseDir: '.'
         }
     });
-    gulp.watch(['*.html'], reload);
-    gulp.watch(['js/*.js'], ['babel']);
-    gulp.watch(['css/*.css'], reload);
-    gulp.watch(['sass/*.scss'], ['sass']);
 });
 
-
-gulp.task('default', ['serve', 'sass', 'babel'], function () {
+gulp.task('default', ['serve', 'sass', 'babel', 'watch'], function () {
     console.log("Command:\n   serve - run live reload server");
 });
