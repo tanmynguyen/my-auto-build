@@ -54,8 +54,10 @@ gulp.task('sass', function() {
     .pipe(reload(reloadOptions));
 });
 
+//compile react, es6 -> javascript
 gulp.task('babel', function(){
     return gulp.src('assets/js/*.js')
+        .pipe(plumber(plumberOptions))
         .pipe(react())
         .pipe(babel({
             presets: ['react','es2015']
